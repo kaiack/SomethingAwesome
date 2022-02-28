@@ -47,13 +47,14 @@ table {
 	border-spacing: 0;
 }
 
+/* My code here*/
+
 body {
     display: flex;
     background-color: #60a9ff;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    
 }
 
 html {
