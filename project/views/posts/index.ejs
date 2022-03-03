@@ -8,9 +8,12 @@
 </head>
 <body>
     <h1>All Posts</h1>
+    <div>
+        <a href="/posts/new">New Post</a>
+    </div>
     <ul>
         <% posts.forEach(post => { %>
-            <li><%= post.title %></li>
+            <li><a href="/posts/<%=post._id%>"><%= post.title %></a></li>
         <% }) %>
     </ul>
 </body>

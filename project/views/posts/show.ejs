@@ -8,5 +8,13 @@
 </head>
 <body>
     <h1>Campground show</h1>
+    <a href="/posts/<%= post._id %>/edit">edit</a>
+    <p><%= post %> </p>
+    <footer>
+        <a href="/posts">Posts</a>
+        <form action="/posts/<%= post._id %>?_method=DELETE" method="POST">
+            <button>Delete</button>
+        </form>
+    </footer>
 </body>
 </html>
