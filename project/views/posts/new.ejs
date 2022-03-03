@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New post</title>
+</head>
+<body>
+    <form action="/posts" method="POST">
+        <div>
+            <label for="title">Title</label>
+            <input type="text" name="post[title]" id="title">
+        </div>
+        <div>
+            <label for="author">Author</label>
+            <input type="text" name="post[author]" id="author">
+        </div>
+        <div>
+            <label for="content">Content</label>
+            <input type="text" name="post[content]" id="content">
+        </div>
+        <div>
+            <label for="category">category</label>
+            <input type="text" name="post[category]" id="category">
+        </div>
+        <button>Submit</button>
+    </form>
+</body>
+</html>
