@@ -12,7 +12,9 @@ const postSchema = new Schema({
     },
     content: {
         type: String,
-        required: true
+    },
+    image: {
+        type: String,
     },
     likes: {
         type: Number,
@@ -20,7 +22,8 @@ const postSchema = new Schema({
     },
     category: {
         type: String,
-        enum: ['Question', 'Fluff', 'Announcement', 'General']
+        enum: ['question', 'fluff', 'announcement', 'general'],
+        required: true
     }
 })
 

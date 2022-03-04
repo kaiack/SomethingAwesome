@@ -1,8 +1,9 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const ejsMate = require('ejs-mate');
 const app = express();
-
+const morgan = require('morgan');
 const Post = require('./models/post');
 
 // This allows us to send put, delete etc updates from html forms.
@@ -20,17 +21,30 @@ db.once("open", () => {
 
 // Setup path for views directory for our app
 app.set('views', path.join(__dirname, 'views'));
-// Set the view engine of express to ejs. 
+
+// Set the view engine of express to ejs and use ejs-mate engine for layouts.
 // https://expressjs.com/en/guide/using-template-engines.html
+// https://www.npmjs.com/package/ejs-mate
+app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 
-
+// Our middleware functions
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
+app.use(morgan('tiny'));
 
 app.listen(3000, () =>{
     console.log("App listening on port 3000");
 })
+
+
+
+
+
+/*
+    ------------    ROUTES   ------------
+*/
+
 
 
 app.get('/', (req, res)=>{
@@ -49,6 +63,7 @@ app.get('/posts/new', (req, res) =>{
 
 app.post('/posts', async (req, res) =>{
     const post = new Post(req.body.post);
+    console.log(req.body.post);
     await post.save();
     res.redirect(`/posts/${post._id}`);
 })

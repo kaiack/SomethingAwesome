@@ -1,19 +1,20 @@
 <% layout('layouts/boilerplate.ejs') %> 
+
 <div class="row">
-    <h1 class="text-center">New post</h1>
+    <h1 class="text-center">Edit post</h1>
     <div class="col-6 offset-3">
         <form action="/posts" method="POST">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" name="post[title]" id="title">
+                <input class="form-control" type="text" name="post[title]" id="title" value="<%= post.title %>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="author">Author</label>
-                <input class="form-control" type="text" name="post[author]" id="author">
+                <input class="form-control" type="text" name="post[author]" id="author" value="<%= post.author %>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="content">Content</label>
-                <input class="form-control" type="text" name="post[content]" id="content">
+                <input class="form-control" type="text" name="post[content]" id="content" value="<%= post.content %>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="image">Image Url</label>
@@ -22,7 +23,6 @@
             <div class="mb-3">
                 <label class="form-label" for="category">Category</label>
                 <select class="form-select" aria-label="Default select example" id="category" name="post[category]">
-                    <option selected>Select Category</option>
                     <option value="general">General</option>
                     <option value="question">Question</option>
                     <option value="fluff">Fluff</option>
@@ -35,11 +35,7 @@
     </div>
 </div>
 
-<footer>
-    <a href="/posts">Posts</a>
-</footer>
 
-<!-- 
-    When we do "post[category]" for example, this will be parsed by express after being posted to it and
-    put inside a 'post' object inside the request object. Very useful!
- -->
+<footer>
+    <a href="/posts/<%= post._id %> ">Back to Post</a>
+</footer>

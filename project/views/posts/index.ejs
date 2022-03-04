@@ -1,20 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Posts</title>
-</head>
-<body>
-    <h1>All Posts</h1>
-    <div>
-        <a href="/posts/new">New Post</a>
-    </div>
-    <ul>
-        <% posts.forEach(post => { %>
-            <li><a href="/posts/<%=post._id%>"><%= post.title %></a></li>
+<% layout('layouts/boilerplate.ejs') %>
+
+<h1>All Posts</h1>
+<div>
+    <a href="/posts/new">New Post</a>
+</div>
+
+<!-- style="width: 18rem;" -->
+
+<% posts.forEach(post => { %>
+    <div class="card mb-3" >
+        <div class="row">
+            <div class="col-md-4">
+                <img src="<%= post.image %> " class="card-img-top" alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title"><%= post.title %> </h5>
+                    <p class="card-text"><%= post.content %> </p>
+                    <a href="/posts/<%= post.id %> " class="btn btn-primary">View Post</a>
+                  </div>
+            </div>
+        </div>
+        
+      </div>
+<% }) %>
+
+<ul>
+    <% posts.forEach(post=> { %>
+        <li><a href="/posts/<%=post._id%>">
+                <%= post.title %>
+            </a></li>
         <% }) %>
-    </ul>
-</body>
-</html>
+</ul>
