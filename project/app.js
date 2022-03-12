@@ -6,6 +6,9 @@ const app = express();
 const morgan = require('morgan');
 const Post = require('./models/post');
 
+const catchAsync = require('./helpers/catchAsync');
+const ExpresError = require('./helpers/ExpressError');
+
 // This allows us to send put, delete etc updates from html forms.
 const methodOverride = require('method-override');
 
@@ -33,13 +36,6 @@ app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 
-app.listen(3000, () =>{
-    console.log("App listening on port 3000");
-})
-
-
-
-
 
 /*
     ------------    ROUTES   ------------
@@ -51,46 +47,53 @@ app.get('/', (req, res)=>{
     res.render("home.ejs");
 });
 
-app.get('/posts', async (req, res) => {
+app.get('/posts', catchAsync(async (req, res) => {
     const posts = await Post.find({});
     res.render('posts/index.ejs', {posts});
-})
+}));
 
 
 app.get('/posts/new', (req, res) =>{
     res.render('posts/new.ejs');
-})
+});
 
-app.post('/posts', async (req, res) =>{
+app.post('/posts', catchAsync(async (req, res) =>{
     const post = new Post(req.body.post);
     console.log(req.body.post);
     await post.save();
     res.redirect(`/posts/${post._id}`);
-})
+}));
 
-app.get('/posts/:id', async (req, res) =>{
+app.get('/posts/:id', catchAsync(async (req, res) =>{
     const {id} = req.params;
     //console.log(id);
     const post = await Post.findById(id);
     res.render('posts/show', {post});
-})
+}));
 
-app.get('/posts/:id/edit', async (req, res) =>{
+app.get('/posts/:id/edit', catchAsync(async (req, res) =>{
     const {id} = req.params;
     const post = await Post.findById(id);
     res.render('posts/edit', {post});
-})
+}));
 
-app.put('/posts/:id', async(req, res) =>{
+app.put('/posts/:id', catchAsync(async(req, res) =>{
     // console.log("EDDITEED")
     const post = await Post.findByIdAndUpdate(req.params.id, req.body.post);
     res.redirect(`/posts/${req.params.id}`);
-})
+}));
 
-app.delete('/posts/:id', async(req, res) =>{
+app.delete('/posts/:id', catchAsync(async(req, res) =>{
     console.log("DELETEEETDDD")
     // res.send("DELETINGHEHEH")
     await Post.findByIdAndDelete(req.params.id);
     res.redirect(`/posts`);
-})
+}));
 
+app.use((err, req, res, next) =>{
+    res.send("ERROR");
+});
+
+app.listen(3000, () =>{
+    console.log("App listening on port 3000");
+});
