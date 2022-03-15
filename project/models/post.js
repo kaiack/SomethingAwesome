@@ -24,7 +24,13 @@ const postSchema = new Schema({
         type: String,
         enum: ['question', 'fluff', 'announcement', 'general'],
         required: true
-    }
+    },
+    comments: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Comment'
+        }
+    ]
 })
 
 const Post = mongoose.model('Post', postSchema);

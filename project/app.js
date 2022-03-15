@@ -5,6 +5,7 @@ const ejsMate = require('ejs-mate');
 const app = express();
 const morgan = require('morgan');
 const Post = require('./models/post');
+const Comment = require('./models/comment');
 const {postSchema} = require('./schemas.js')
 
 const catchAsync = require('./helpers/catchAsync');
@@ -12,6 +13,7 @@ const ExpresError = require('./helpers/ExpressError');
 
 // This allows us to send put, delete etc updates from html forms.
 const methodOverride = require('method-override');
+const res = require('express/lib/response');
 
 // Options {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true}
 mongoose.connect('mongodb://localhost:27017/forum');
@@ -70,6 +72,7 @@ app.get('/posts/new', (req, res) =>{
     res.render('posts/new.ejs');
 });
 
+
 app.post('/posts', validatePost, catchAsync(async (req, res) =>{
     const post = new Post(req.body.post);
     console.log(req.body.post);
@@ -102,6 +105,16 @@ app.delete('/posts/:id', catchAsync(async(req, res) =>{
     await Post.findByIdAndDelete(req.params.id);
     res.redirect(`/posts`);
 }));
+
+app.post('/posts/:id/comments', catchAsync(async(req, res)=>{
+    console.log("HERE")
+    const post = await Post.findById(req.params.id);
+    const comment = new Comment(req.body.comment);
+    post.comments.push(comment);
+    await comment.save();
+    await post.save();
+    res.redirect(`/posts/${post._id}`);
+}))
 
 // If we recieve a request that does not match any of the above
 app.use('*', (req, res, next)=>{
