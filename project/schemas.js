@@ -6,7 +6,14 @@ module.exports.postSchema = Joi.object({
         author: Joi.string().required(),
         content: Joi.string().empty(''),
         image: Joi.string().empty(''),
-        likes: Joi.number(),
         category: Joi.string().valid('question', 'fluff', 'announcement', 'general').required(),
+    }).required()
+})
+
+
+module.exports.commentSchema = Joi.object({
+    comment: Joi.object({
+        author: Joi.string().required(),
+        content: Joi.string().required(),
     }).required()
 })

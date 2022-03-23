@@ -26,22 +26,38 @@
           </div>
     </div>
     
-    <div class="col-8 offset-1 mb-3">
+    <div class="col-8 offset-1 mb-5">
         <h2>Comment:</h2>
-        <form action="/posts/<%= post.id %>/comments" method="POST">
+        <form action="/posts/<%= post.id %>/comments" method="POST" class="needs-validation" novalidate>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="name" placeholder="name" name="comment[author]">
+                <input type="text" class="form-control" id="name" placeholder="name" name="comment[author]" required>
                 <label for="name" class="form-label">Username</label>
             </div>
             <div class="form-floating mb-3">
-                <textarea class="form-control" id="comment-content" placeholder="comment" name="comment[content]"></textarea>
+                <textarea class="form-control" id="comment-content" placeholder="comment" name="comment[content]" required></textarea>
                 <label for="comment-content" class="form-label" style="height: 100px">Comment</label>
             </div>
             <button class="btn btn-dark">Submit</button>
         </form>
     </div>
 
-    <p>
-        <%= post.comments %> 
-    </p>
+    <div class="col-8 offset-1 mb-">
+        <% post.comments.forEach(com => { %>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title mt-1"><%= com.author %> </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text"><%= com.content %> </p>
+                    <form action="/posts/<%=post._id%>/comments/<%=com._id%>?_method=DELETE" method="POST">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </div>
+              </div>
+        <% }) %>
+        
+    </div>
+
+    
+
 </div>

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Comment = require('./comment')
 const Schema = mongoose.Schema;
 
 const postSchema = new Schema({
@@ -33,6 +34,14 @@ const postSchema = new Schema({
     ]
 })
 
-const Post = mongoose.model('Post', postSchema);
+postSchema.post('findOneAndDelete', async function(doc){
+    if (doc){
+        await Comment.remove({
+            _id: {
+                $in: doc.comments
+            }
+        })
+    }
+})
 
-module.exports = Post;
+module.exports = mongoose.model('Post', postSchema);
