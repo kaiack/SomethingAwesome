@@ -57,14 +57,14 @@ router.get('/:id/edit', catchAsync(async (req, res) =>{
 router.put('/:id', validatePost, catchAsync(async(req, res) =>{
     // console.log("EDDITEED")
     const post = await Post.findByIdAndUpdate(req.params.id, req.body.post);
-    res.redirect(`/${req.params.id}`);
+    res.redirect(`/posts/${req.params.id}`);
 }));
 
 router.delete('/:id', catchAsync(async(req, res) =>{
     console.log("DELETEEETDDD")
     // res.send("DELETINGHEHEH")
     await Post.findByIdAndDelete(req.params.id);
-    res.redirect(``);
+    res.redirect(`/posts`);
 }));
 
 router.post('/:id/comments', validateComment, catchAsync(async(req, res)=>{
@@ -74,14 +74,14 @@ router.post('/:id/comments', validateComment, catchAsync(async(req, res)=>{
     post.comments.push(comment);
     await comment.save();
     await post.save();
-    res.redirect(`/${post._id}`);
+    res.redirect(`/posts/${post._id}`);
 }));
 
 router.delete('/:id/comments/:commentId', catchAsync(async(req, res)=>{
     const {id, commentId} = req.params;
     await Post.findByIdAndUpdate(id, {$pull: {comments: commentId}});
     await Comment.findOneAndDelete(commentId);
-    res.redirect(`/${id}`);
+    res.redirect(`/posts/${id}`);
 }));
 
 module.exports = router

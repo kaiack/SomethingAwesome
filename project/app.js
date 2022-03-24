@@ -43,7 +43,7 @@ app.use('/posts', postRoutes);
 
 // If we recieve a request that does not match any of the above
 app.use('*', (req, res, next)=>{
-    next(new ExpresError('Page not found', 404));
+    next(new ExpressError('Page not found', 404));
 })
 
 app.use((err, req, res, next) =>{
