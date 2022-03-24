@@ -7,9 +7,9 @@ const morgan = require('morgan');
 const Post = require('./models/post');
 const Comment = require('./models/comment');
 const {postSchema, commentSchema} = require('./schemas.js')
-
+const postRoutes = require('./routes/posts');
 const catchAsync = require('./helpers/catchAsync');
-const ExpresError = require('./helpers/ExpressError');
+const ExpressError = require('./helpers/ExpressError');
 
 // This allows us to send put, delete etc updates from html forms.
 const methodOverride = require('method-override');
@@ -39,98 +39,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 
-
-const validatePost = (req, res, next) =>{
-    const {error} = postSchema.validate(req.body);
-    if (error){
-        const msg = error.details.map(i => i.message).join(',');
-        throw new ExpresError(msg, 400);
-    }
-    // Need to call next or we will just get stuck here.
-    next();
-}
-const validateComment = (req, res, next) =>{
-    const {error} = commentSchema.validate(req.body);
-    if (error){
-        const msg = error.details.map(i => i.message).join(',');
-        throw new ExpresError(msg, 400);
-    }
-    // Need to call next or we will just get stuck here.
-    next();
-}
-
-
-
-/*
-    ------------    ROUTES   ------------
-*/
-
-
-
-app.get('/', (req, res)=>{
-    res.render("home.ejs");
-});
-
-app.get('/posts', catchAsync(async (req, res) => {
-    const posts = await Post.find({});
-    res.render('posts/index.ejs', {posts});
-}));
-
-
-app.get('/posts/new', (req, res) =>{
-    res.render('posts/new.ejs');
-});
-
-
-app.post('/posts', validatePost, catchAsync(async (req, res) =>{
-    const post = new Post(req.body.post);
-    console.log(req.body.post);
-    await post.save();
-    res.redirect(`/posts/${post._id}`);
-}));
-
-app.get('/posts/:id', catchAsync(async (req, res) =>{
-    const {id} = req.params;
-    //console.log(id);
-    const post = await Post.findById(id).populate('comments');
-    res.render('posts/show', {post});
-}));
-
-app.get('/posts/:id/edit', catchAsync(async (req, res) =>{
-    const {id} = req.params;
-    const post = await Post.findById(id);
-    res.render('posts/edit', {post});
-}));
-
-app.put('/posts/:id', validatePost, catchAsync(async(req, res) =>{
-    // console.log("EDDITEED")
-    const post = await Post.findByIdAndUpdate(req.params.id, req.body.post);
-    res.redirect(`/posts/${req.params.id}`);
-}));
-
-app.delete('/posts/:id', catchAsync(async(req, res) =>{
-    console.log("DELETEEETDDD")
-    // res.send("DELETINGHEHEH")
-    await Post.findByIdAndDelete(req.params.id);
-    res.redirect(`/posts`);
-}));
-
-app.post('/posts/:id/comments', validateComment, catchAsync(async(req, res)=>{
-    console.log("HERE")
-    const post = await Post.findById(req.params.id);
-    const comment = new Comment(req.body.comment);
-    post.comments.push(comment);
-    await comment.save();
-    await post.save();
-    res.redirect(`/posts/${post._id}`);
-}));
-
-app.delete('/posts/:id/comments/:commentId', catchAsync(async(req, res)=>{
-    const {id, commentId} = req.params;
-    await Post.findByIdAndUpdate(id, {$pull: {comments: commentId}});
-    await Comment.findOneAndDelete(commentId);
-    res.redirect(`/posts/${id}`);
-}));
+app.use('/posts', postRoutes);
 
 // If we recieve a request that does not match any of the above
 app.use('*', (req, res, next)=>{

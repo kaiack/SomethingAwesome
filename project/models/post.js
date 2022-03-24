@@ -34,9 +34,11 @@ const postSchema = new Schema({
     ]
 })
 
+// If we delete a post, delete all the comments as well.
+// 'post' means we run this function after the action is done.
 postSchema.post('findOneAndDelete', async function(doc){
     if (doc){
-        await Comment.remove({
+        await Comment.deleteMany({
             _id: {
                 $in: doc.comments
             }
