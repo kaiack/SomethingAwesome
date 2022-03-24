@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const catchAsync = require('../helpers/catchAsync');
 const Post = require('../models/post');
-const Comment = require('../models/comment');
-const {postSchema, commentSchema} = require('../schemas.js')
+const {postSchema} = require('../schemas.js')
 const ExpressError = require('../helpers/ExpressError');
 
 const validatePost = (req, res, next) =>{
@@ -15,18 +14,10 @@ const validatePost = (req, res, next) =>{
     // Need to call next or we will just get stuck here.
     next();
 }
-const validateComment = (req, res, next) =>{
-    const {error} = commentSchema.validate(req.body);
-    if (error){
-        const msg = error.details.map(i => i.message).join(',');
-        throw new ExpressError(msg, 400);
-    }
-    // Need to call next or we will just get stuck here.
-    next();
-}
 
 router.get('/', catchAsync(async (req, res) => {
     const posts = await Post.find({});
+    
     res.render('posts/index.ejs', {posts});
 }));
 
@@ -38,13 +29,18 @@ router.post('/', validatePost, catchAsync(async (req, res) =>{
     const post = new Post(req.body.post);
     console.log(req.body.post);
     await post.save();
-    res.redirect(`/${post._id}`);
+    req.flash('success', 'Made a new post');
+    res.redirect(`/posts/${post._id}`);
 }));
 
 router.get('/:id', catchAsync(async (req, res) =>{
     const {id} = req.params;
     //console.log(id);
     const post = await Post.findById(id).populate('comments');
+    if (!post){
+        req.flash('error', "Post doesnt exist");
+        return res.redirect('/posts');
+    }
     res.render('posts/show', {post});
 }));
 
@@ -55,8 +51,13 @@ router.get('/:id/edit', catchAsync(async (req, res) =>{
 }));
 
 router.put('/:id', validatePost, catchAsync(async(req, res) =>{
-    // console.log("EDDITEED")
+    console.log("EDDITEED");
     const post = await Post.findByIdAndUpdate(req.params.id, req.body.post);
+    if (!post){
+        req.flash('error', "Post doesnt exist");
+        return res.redirect('/posts');
+    }
+    req.flash('success', 'Updated your post');
     res.redirect(`/posts/${req.params.id}`);
 }));
 
@@ -64,24 +65,10 @@ router.delete('/:id', catchAsync(async(req, res) =>{
     console.log("DELETEEETDDD")
     // res.send("DELETINGHEHEH")
     await Post.findByIdAndDelete(req.params.id);
+    req.flash('success', 'Post deleted');
     res.redirect(`/posts`);
 }));
 
-router.post('/:id/comments', validateComment, catchAsync(async(req, res)=>{
-    console.log("HERE")
-    const post = await Post.findById(req.params.id);
-    const comment = new Comment(req.body.comment);
-    post.comments.push(comment);
-    await comment.save();
-    await post.save();
-    res.redirect(`/posts/${post._id}`);
-}));
 
-router.delete('/:id/comments/:commentId', catchAsync(async(req, res)=>{
-    const {id, commentId} = req.params;
-    await Post.findByIdAndUpdate(id, {$pull: {comments: commentId}});
-    await Comment.findOneAndDelete(commentId);
-    res.redirect(`/posts/${id}`);
-}));
 
 module.exports = router

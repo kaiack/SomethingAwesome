@@ -4,16 +4,14 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const app = express();
 const morgan = require('morgan');
-const Post = require('./models/post');
-const Comment = require('./models/comment');
-const {postSchema, commentSchema} = require('./schemas.js')
 const postRoutes = require('./routes/posts');
-const catchAsync = require('./helpers/catchAsync');
+const commentRoutes = require('./routes/comments');
 const ExpressError = require('./helpers/ExpressError');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 // This allows us to send put, delete etc updates from html forms.
 const methodOverride = require('method-override');
-const res = require('express/lib/response');
 
 // Options {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true}
 mongoose.connect('mongodb://localhost:27017/forum');
@@ -37,9 +35,34 @@ app.set('view engine', 'ejs');
 // Our middleware functions
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('tiny'));
 
+
+const sessionConfig = {
+    secret: 'urmumhaha',
+    resave: false, // These two are to avoid deprecation warnings.
+    saveUninitialized: false,
+    cookie: {
+        expires: Date.now() + (1000*60*60), // expires in an hour
+        maxAge: Date.now() + (1000*60*60),
+        httpOnly: true
+    }
+    //store: We need to change this!!!
+}
+app.use(session(sessionConfig));
+app.use(flash());
+
+
+app.use((req, res, next) =>{
+    res.locals.success = req.flash('success');
+    res.locals.error= req.flash('error');
+    next();
+});
+
+console.log('here');
 app.use('/posts', postRoutes);
+app.use('/posts/:id/comments', commentRoutes);
 
 // If we recieve a request that does not match any of the above
 app.use('*', (req, res, next)=>{
