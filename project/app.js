@@ -9,6 +9,11 @@ const commentRoutes = require('./routes/comments');
 const ExpressError = require('./helpers/ExpressError');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const passportLocal = require('passport-local');
+const User = require('./models/user');
+
+
 
 // This allows us to send put, delete etc updates from html forms.
 const methodOverride = require('method-override');
@@ -51,6 +56,20 @@ const sessionConfig = {
     //store: We need to change this!!!
 }
 app.use(session(sessionConfig));
+
+// From passport docs, session needs to be used before passport.session.
+// https://stackoverflow.com/questions/22052258/what-does-passport-session-middleware-do/28994045#28994045
+app.use(passport.initialize());
+app.use(passport.session());
+
+// This tells passport to use the 'Local Strategy' and the authentication method for that is located on our User model 
+//and is called authenticate. We did not define this method, it came from passport-local-mongoose and was automatically added to our user model.
+passport.use(new passportLocal(User.authenticate()))
+
+// Serialization is for 'getting' the user data in and out of a session.
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use(flash());
 
 
@@ -60,7 +79,6 @@ app.use((req, res, next) =>{
     next();
 });
 
-console.log('here');
 app.use('/posts', postRoutes);
 app.use('/posts/:id/comments', commentRoutes);
 
