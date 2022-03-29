@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const app = express();
 const morgan = require('morgan');
+const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 const ExpressError = require('./helpers/ExpressError');
@@ -81,6 +82,7 @@ app.use((req, res, next) =>{
 
 app.use('/posts', postRoutes);
 app.use('/posts/:id/comments', commentRoutes);
+app.use('/', userRoutes);
 
 // If we recieve a request that does not match any of the above
 app.use('*', (req, res, next)=>{
