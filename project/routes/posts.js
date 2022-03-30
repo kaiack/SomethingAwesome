@@ -4,6 +4,7 @@ const catchAsync = require('../helpers/catchAsync');
 const Post = require('../models/post');
 const {postSchema} = require('../schemas.js')
 const ExpressError = require('../helpers/ExpressError');
+const {isLoggedIn} = require('../myMiddleware');
 
 const validatePost = (req, res, next) =>{
     const {error} = postSchema.validate(req.body);
@@ -21,11 +22,11 @@ router.get('/', catchAsync(async (req, res) => {
     res.render('posts/index.ejs', {posts});
 }));
 
-router.get('/new', (req, res) =>{
+router.get('/new', isLoggedIn, (req, res) =>{
     res.render('posts/new.ejs');
 });
 
-router.post('/', validatePost, catchAsync(async (req, res) =>{
+router.post('/', isLoggedIn, validatePost, catchAsync(async (req, res) =>{
     const post = new Post(req.body.post);
     console.log(req.body.post);
     await post.save();
@@ -50,7 +51,7 @@ router.get('/:id/edit', catchAsync(async (req, res) =>{
     res.render('posts/edit', {post});
 }));
 
-router.put('/:id', validatePost, catchAsync(async(req, res) =>{
+router.put('/:id', isLoggedIn, validatePost, catchAsync(async(req, res) =>{
     console.log("EDDITEED");
     const post = await Post.findByIdAndUpdate(req.params.id, req.body.post);
     if (!post){
@@ -61,7 +62,7 @@ router.put('/:id', validatePost, catchAsync(async(req, res) =>{
     res.redirect(`/posts/${req.params.id}`);
 }));
 
-router.delete('/:id', catchAsync(async(req, res) =>{
+router.delete('/:id', isLoggedIn, catchAsync(async(req, res) =>{
     console.log("DELETEEETDDD")
     // res.send("DELETINGHEHEH")
     await Post.findByIdAndDelete(req.params.id);
