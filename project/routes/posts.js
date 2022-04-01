@@ -2,29 +2,9 @@ const express = require('express');
 const router = express.Router();
 const catchAsync = require('../helpers/catchAsync');
 const Post = require('../models/post');
-const {postSchema} = require('../schemas.js')
-const ExpressError = require('../helpers/ExpressError');
-const {isLoggedIn} = require('../myMiddleware');
+const {isLoggedIn, validatePost, checkPostAuthor} = require('../myMiddleware');
 const { response } = require('express');
 
-const validatePost = (req, res, next) => {
-    const {error} = postSchema.validate(req.body);
-    if (error){
-        const msg = error.details.map(i => i.message).join(',');
-        throw new ExpressError(msg, 400);
-    }
-    // Need to call next or we will just get stuck here.
-    next();
-}
-
-const checkPostAuthor = (req, res, next) => {
-    const post = await Post.findById(req.params.id);
-    if (!post){
-        req.flash('error', "Post doesnt exist");
-        return res.redirect('/posts');
-    }
-    next();
-}
 
 
 router.get('/', catchAsync(async (req, res) => {
@@ -39,6 +19,7 @@ router.get('/new', isLoggedIn, (req, res) =>{
 
 router.post('/', isLoggedIn, validatePost, catchAsync(async (req, res) =>{
     const post = new Post(req.body.post);
+    //console.log(req.body.post);
     post.author = req.user._id;
     await post.save();
     req.flash('success', 'Made a new post');
@@ -47,7 +28,9 @@ router.post('/', isLoggedIn, validatePost, catchAsync(async (req, res) =>{
 
 router.get('/:id', catchAsync(async (req, res) =>{
     const {id} = req.params;
-    const post = await (await Post.findById(id).populate('comments')).populate('author');
+    //console.log(id);
+    const post = await (await Post.findById(id).populate({path: 'comments', populate: {path: 'author'}}).populate('author'));
+
     if (!post){
         req.flash('error', "Post doesnt exist");
         return res.redirect('/posts');
@@ -55,7 +38,7 @@ router.get('/:id', catchAsync(async (req, res) =>{
     res.render('posts/show', {post});
 }));
 
-router.get('/:id/edit', checkPostAuthor, catchAsync(async (req, res) =>{
+router.get('/:id/edit', isLoggedIn, checkPostAuthor, catchAsync(async (req, res) =>{
     const {id} = req.params;
     const post = await Post.findById(id);
     if (!post){
@@ -66,6 +49,12 @@ router.get('/:id/edit', checkPostAuthor, catchAsync(async (req, res) =>{
 }));
 
 router.put('/:id', isLoggedIn, checkPostAuthor, validatePost, catchAsync(async(req, res) =>{
+    console.log("EDDITEED");
+    
+    if (!post.author.equals(req.user._id)) {
+        req.flash("error", "You are not authorised to do this.")
+        res.redirect(`/posts/${req.params.id}`);
+    }
     await Post.findByIdAndUpdate(req.params.id, req.body.post);
     req.flash('success', 'Updated your post');
     res.redirect(`/posts/${req.params.id}`);
@@ -73,6 +62,7 @@ router.put('/:id', isLoggedIn, checkPostAuthor, validatePost, catchAsync(async(r
 
 router.delete('/:id', isLoggedIn, checkPostAuthor, catchAsync(async(req, res) =>{
     console.log("DELETEEETDDD")
+    // res.send("DELETINGHEHEH")
     await Post.findByIdAndDelete(req.params.id);
     req.flash('success', 'Post deleted');
     res.redirect(`/posts`);
