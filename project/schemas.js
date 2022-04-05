@@ -13,7 +13,6 @@ module.exports.postSchema = Joi.object({
 
 module.exports.commentSchema = Joi.object({
     comment: Joi.object({
-        author: Joi.string().required(),
         content: Joi.string().required(),
     }).required()
 })
