@@ -13,15 +13,24 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Category: <%= post.category %> </li>
-                <li class="list-group-item">Likes: <%= post.likes %> </li>
+                <li class="list-group-item">Likes: <%= post.likes.length %> </li>
               </ul>
-            <% if (user && post.author.equals(user._id)) { %>
+            <% if (user) { %>
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <a href="/posts/<%= post._id %>/edit" class="btn btn-outline-info">Edit</a>
-                        <form action="/posts/<%= post._id %>?_method=DELETE" method="POST">
-                            <button class="btn btn-danger">Delete</button>
-                        </form>
+                        <div class="d-flex">
+                            <form action="/posts/<%= post._id %>/like?_method=POST" method="POST" class="me-2">
+                                <button class="btn btn-primary">Like</button>
+                            </form>
+                        </div>
+                        <% if (post.author.equals(user._id)) { %>
+                            <div class="d-flex">
+                                <a href="/posts/<%= post._id %>/edit" class="btn btn-outline-info me-2">Edit</a>
+                                <form action="/posts/<%= post._id %>?_method=DELETE" method="POST">
+                                    <button class="btn btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             <% } %>

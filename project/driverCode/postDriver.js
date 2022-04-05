@@ -15,6 +15,7 @@ module.exports.createPost = async (req, res) =>{
     const post = new Post(req.body.post);
     //console.log(req.body.post);
     post.author = req.user._id;
+    post.likes = [];
     await post.save();
     req.flash('success', 'Made a new post');
     res.redirect(`/posts/${post._id}`);
@@ -59,4 +60,17 @@ module.exports.deletePost = async(req, res) =>{
     await Post.findByIdAndDelete(req.params.id);
     req.flash('success', 'Post deleted');
     res.redirect(`/posts`);
+}
+
+module.exports.likePost = async(req, res) =>{
+    const post = await Post.findById(req.params.id);
+    if (!post.likes.includes(req.user._id)){
+        post.likes.push(req.user._id);
+    } else {
+        const removeIndex = post.likes.indexOf(req.user._id);
+        post.likes.splice(removeIndex, 1);
+    }
+    await post.save();
+    //console.log(post);
+    res.redirect(`/posts/${req.params.id}`);
 }

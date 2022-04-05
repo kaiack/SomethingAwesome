@@ -18,10 +18,12 @@ const postSchema = new Schema({
     image: {
         type: String,
     },
-    likes: {
-        type: Number,
-        min: 0
-    },
+    likes: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     category: {
         type: String,
         enum: ['question', 'fluff', 'announcement', 'general'],
