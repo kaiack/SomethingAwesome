@@ -1,0 +1,26 @@
+body {
+    height: 100vh;
+    background-image: url('../images/forest.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.cont {
+    max-width: 60vw;
+}
+
+.nav-link {
+    padding: 0.25rem 0;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    margin-left: 0.7rem;
+}
+
+.nav-link.active {
+    color: whitesmoke;
+}
+
+.btn-dark, .btn-dark:hover {
+    color: #333;
+    text-shadow: none;
+}

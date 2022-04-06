@@ -85,6 +85,10 @@ app.use('/posts', postRoutes);
 app.use('/posts/:id/comments', commentRoutes);
 app.use('/', userRoutes);
 
+app.get('/', (req, res) =>{
+    res.render('home');
+})
+
 // If we recieve a request that does not match any of the above
 app.use('*', (req, res, next)=>{
     next(new ExpressError('Page not found', 404));
