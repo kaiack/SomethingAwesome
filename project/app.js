@@ -13,7 +13,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const passportLocal = require('passport-local');
 const User = require('./models/user');
-
+const mongoSanitize = require('express-mongo-sanitize');
 
 
 // This allows us to send put, delete etc updates from html forms.
@@ -43,15 +43,17 @@ app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('tiny'));
-
+app.use(mongoSanitize());
 
 const sessionConfig = {
+    name: "huehueuhueuh",
     secret: 'urmumhaha',
     resave: false, // These two are to avoid deprecation warnings.
     saveUninitialized: false,
     cookie: {
         expires: Date.now() + (1000*60*60), // expires in an hour
         maxAge: Date.now() + (1000*60*60),
+        // secure:true,
         httpOnly: true
     }
     //store: We need to change this!!!

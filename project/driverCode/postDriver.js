@@ -44,7 +44,8 @@ module.exports.editPage = async (req, res) =>{
 
 module.exports.editPost = async(req, res) =>{
     console.log("EDDITEED");
-    
+    const {id} = req.params;
+    const post = await Post.findById(id);
     if (!post.author.equals(req.user._id)) {
         req.flash("error", "You are not authorised to do this.")
         res.redirect(`/posts/${req.params.id}`);
