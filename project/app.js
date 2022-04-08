@@ -14,7 +14,7 @@ const passport = require('passport');
 const passportLocal = require('passport-local');
 const User = require('./models/user');
 const mongoSanitize = require('express-mongo-sanitize');
-
+const helmet = require('helmet');
 
 // This allows us to send put, delete etc updates from html forms.
 const methodOverride = require('method-override');
@@ -44,6 +44,42 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('tiny'));
 app.use(mongoSanitize());
+
+const scriptSrcUrls = [
+    "https://cdn.jsdelivr.net",
+    "https://stackpath.bootstrapcdn.com/",
+    "https://kit.fontawesome.com/",
+];
+const styleSrcUrls = [
+    "https://kit-free.fontawesome.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+    "https://cdn.jsdelivr.net",
+];
+const connectSrcUrls = [];
+const fontSrcUrls = ["https://cdn.jsdelivr.net"];
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: [],
+            connectSrc: ["'self'", ...connectSrcUrls],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+            workerSrc: ["'self'", "blob:"],
+            objectSrc: [],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                "https://images.unsplash.com/",
+                "https://source.unsplash.com/"
+            ],
+            fontSrc: ["'self'", ...fontSrcUrls],
+        },
+    })
+);
+
+
 
 const sessionConfig = {
     name: "huehueuhueuh",

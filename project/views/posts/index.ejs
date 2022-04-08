@@ -11,11 +11,23 @@
     <div class="card mb-3" >
         <div class="row">
             <div class="col-md-4">
-                <img src="<%= post.image %> " class="card-img-top" alt="...">
+                <img src="<%= post.image %> " class="card-img-top" alt="..." crossorigin="anonymous">
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <h5 class="card-title"><%= post.title %> </h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title"><%= post.title %> </h5>
+                        <% if (post.category === "question") { %>
+                            <i class="bi bi-question-lg" id="category-icon"></i>
+                        <% } else if (post.category === "fluff") { %>
+                            <i class="bi bi-cloud-fill" id="category-icon"></i>
+                        <% } else if (post.category === "announcement") { %>
+                            <i class="bi bi-megaphone-fill" id="category-icon"></i>
+                        <% } else { %>
+                            <i class="bi bi-globe" id="category-icon"></i>
+                        <% } %> 
+                        
+                    </div>
                     <p class="card-text"><%= post.content %> </p>
                     <a href="/posts/<%= post.id %> " class="btn btn-primary">View Post</a>
                   </div>
@@ -25,10 +37,3 @@
       </div>
 <% }) %>
 
-<ul>
-    <% posts.forEach(post=> { %>
-        <li><a href="/posts/<%=post._id%>">
-                <%= post.title %>
-            </a></li>
-        <% }) %>
-</ul>
