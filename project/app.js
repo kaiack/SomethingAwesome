@@ -88,9 +88,11 @@ app.use(
     })
 );
 
+const secret = process.env.SECRET || 'urmumhaha';
+
 const store = new MongoStore({
     mongoUrl: mongoUrl,
-    secret: 'urmumhaha',
+    secret: secret,
     touchAfter: 24*3600,
 })
 
@@ -101,7 +103,7 @@ store.on("error", function (err) {
 const sessionConfig = {
     store,
     name: "huehueuhueuh",
-    secret: 'urmumhaha',
+    secret: secret,
     resave: false, // These two are to avoid deprecation warnings.
     saveUninitialized: false,
     cookie: {
