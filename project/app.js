@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production"){
+    require('dotenv').config();
+}
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -20,7 +24,11 @@ const helmet = require('helmet');
 const methodOverride = require('method-override');
 
 // Options {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true}
-mongoose.connect('mongodb://localhost:27017/forum');
+
+const mongoUrl = process.env.mongoURL;
+// console.log(mongoUrl);
+// 'mongodb://localhost:27017/forum'
+mongoose.connect(mongoUrl);
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "Error when connecting:"));
 db.once("open", () => {
