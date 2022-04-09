@@ -13,6 +13,7 @@ const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 const ExpressError = require('./helpers/ExpressError');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const passportLocal = require('passport-local');
@@ -87,9 +88,18 @@ app.use(
     })
 );
 
+const store = new MongoStore({
+    mongoUrl: mongoUrl,
+    secret: 'urmumhaha',
+    touchAfter: 24*3600,
+})
 
+store.on("error", function (err) {
+    console.log("Error with storing session", err);
+})
 
 const sessionConfig = {
+    store,
     name: "huehueuhueuh",
     secret: 'urmumhaha',
     resave: false, // These two are to avoid deprecation warnings.
@@ -100,7 +110,6 @@ const sessionConfig = {
         // secure:true,
         httpOnly: true
     }
-    //store: We need to change this!!!
 }
 app.use(session(sessionConfig));
 
