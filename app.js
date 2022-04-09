@@ -26,7 +26,7 @@ const methodOverride = require('method-override');
 
 // Options {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true}
 
-const mongoUrl = process.env.mongoURL;
+const mongoUrl = process.env.mongoURL || 'mongodb://localhost:27017/forum';
 // console.log(mongoUrl);
 // 'mongodb://localhost:27017/forum'
 mongoose.connect(mongoUrl);
@@ -160,7 +160,7 @@ app.use((err, req, res, next) =>{
     res.status(statusCode).render('error', {err});
 });
 
-const port = process.env.PORT || 2000;
+const port = process.env.PORT || 3000;
 app.listen(port, () =>{
     console.log("App listening on port 3000");
 });
