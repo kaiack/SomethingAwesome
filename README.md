@@ -1,4 +1,4 @@
-# Something awesome project
+# Kai 6841 project
 
 This is my something awesome project for Comp6841. My aim was to learn frontend development and expand my knowledge of backend development as well. 
 
