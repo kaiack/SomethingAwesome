@@ -1,3 +1,4 @@
 project/.env
 practice
 startdb.sh
+node_modules
